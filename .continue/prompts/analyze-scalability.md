@@ -8,17 +8,26 @@ Utilize as responsabilidades do **Performance Engineer** e todas as regras defin
 
 ---
 
-# Contexto inicial
+## Contexto inicial
 
-Utilize como ponto de partida:
+Utilize o contexto disponível para iniciar a análise, incluindo:
 
-`docs/assessment/01-discovery.md`
+* @repository-map;
+* código-fonte;
+* arquivos de configuração;
+* documentação existente;
+* documentos de assessment anteriores, quando disponíveis e relevantes;
+* informações fornecidas explicitamente pelo usuário.
 
-Se outros documentos anteriores do assessment estiverem disponíveis, utilize-os apenas quando forem relevantes.
+Não exija a existência de `docs/assessment/01-discovery.md`.
 
-Documentos anteriores são evidência derivada.
+Caso esse documento esteja disponível, utilize-o como referência auxiliar.
 
-Sempre que uma conclusão importante depender de comportamento específico do código, consulte a evidência primária correspondente quando ela estiver disponível.
+Caso não esteja disponível, realize a descoberta técnica necessária dentro do escopo desta análise.
+
+Não interrompa a análise apenas porque uma especialidade anterior não foi executada.
+
+Solicite somente o contexto adicional necessário para avaliar os aspectos de escalabilidade.
 
 ---
 

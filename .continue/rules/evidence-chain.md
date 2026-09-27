@@ -275,3 +275,28 @@ Ao terminar a execução:
 2. informe ao usuário se o status permanece `EM DESCOBERTA` ou passou para `DESCOBERTA CONCLUÍDA`;
 3. se permanecer em descoberta, informe qual contexto deve ser fornecido na próxima interação;
 4. não inicie automaticamente outra etapa do assessment.
+
+## Independência entre análises
+
+Cada análise do API Assessment Toolkit deve ser executável de forma independente.
+
+Nenhum agente ou prompt pode exigir a execução prévia de outra especialidade, salvo quando a tarefa solicitar explicitamente essa dependência.
+
+Documentos de assessments anteriores são fontes opcionais de contexto.
+
+Se um documento anterior não estiver disponível, o agente deve iniciar a investigação a partir do contexto disponível, como repository map, código, configurações e documentação.
+
+A ausência de um relatório anterior não deve impedir a análise.
+
+Se informações necessárias não estiverem disponíveis, o agente deve solicitar os arquivos ou dados complementares necessários.
+
+O agente não deve assumir que outra análise foi executada.
+
+O agente não deve declarar uma análise concluída com base apenas nas conclusões de outro relatório, sem verificar se as evidências são suficientes para seu próprio escopo.
+
+Cada relatório deve registrar seu próprio escopo, contexto analisado, evidências, limitações e conclusões.
+
+A execução de uma especialidade não deve iniciar automaticamente outras especialidades.
+
+Relatórios anteriores podem ser reutilizados para reduzir esforço, desde que suas conclusões sejam identificadas como evidências derivadas e que suas limitações sejam respeitadas.
+

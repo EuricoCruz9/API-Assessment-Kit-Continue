@@ -1,0 +1,496 @@
+
+---
+name: Analyze Resilience
+invokable: true
+description: Avalia a resiliência de uma API, identificando mecanismos de tolerância a falhas, dependências críticas e riscos de recuperação com base em evidências.
+---
+
+# Analyze Resilience
+
+## 1. Objetivo
+
+Atue como um especialista em resiliência e confiabilidade de APIs e sistemas distribuídos.
+
+Utilize as instruções especializadas de `reliability-engineer.md` para conduzir uma avaliação técnica da resiliência da API ou serviço selecionado pelo usuário.
+
+O objetivo é identificar:
+
+- Mecanismos de tolerância a falhas existentes.
+- Dependências que podem afetar a continuidade do processamento.
+- Estratégias de tratamento, isolamento e recuperação de falhas.
+- Riscos de falhas parciais, repetição de operações e indisponibilidade.
+- Lacunas de implementação, configuração, documentação e evidência operacional.
+
+A análise deve se basear exclusivamente em evidências verificáveis encontradas no código-fonte, configurações, documentação, artefatos de infraestrutura, testes e informações explicitamente fornecidas pelo usuário.
+
+Não invente ou presuma componentes, comportamentos, mecanismos, métricas, garantias ou configurações que não estejam sustentados por evidências.
+
+## 2. Referências e contexto
+
+Utilize as seguintes fontes quando estiverem disponíveis:
+
+1. `.continue/agents/reliability-engineer.md` — referência especializada obrigatória para os critérios técnicos da avaliação.
+2. `.continue/rules/evidence-policy.md` — regras de classificação e fundamentação das conclusões.
+3. `.continue/rules/evidence-chain.md` — orientações para rastreabilidade das evidências.
+4. `.continue/rules/documentation-style.md` — padrão de documentação dos relatórios.
+5. Código-fonte, configurações, dependências, testes, documentação e artefatos de infraestrutura disponíveis no repositório.
+6. Relatórios anteriores, quando disponíveis e relevantes, como fontes complementares.
+
+Se o conteúdo do agente ou de uma regra não estiver disponível no contexto do Continue, não presuma que foi carregado automaticamente.
+
+Solicite ou disponibilize explicitamente as instruções necessárias antes de afirmar que foram utilizadas.
+
+Não invente o conteúdo de arquivos de referência.
+
+A ausência de relatórios anteriores não deve impedir a execução.
+
+## 3. Escopo da avaliação
+
+Conduza a análise considerando os seguintes aspectos, na medida em que existam evidências suficientes.
+
+### 3.1. Dependências e pontos de falha
+
+Identifique dependências internas e externas relevantes para os fluxos analisados.
+
+Investigue serviços HTTP, bancos de dados, sistemas de mensageria, gateways, serviços de autenticação e outros componentes efetivamente encontrados.
+
+Para cada dependência relevante, registre:
+
+- Componente que realiza a chamada.
+- Operação ou fluxo envolvido.
+- Tipo de comunicação identificado.
+- Mecanismos de proteção existentes.
+- Comportamento observado diante de falhas.
+- Limitações e informações faltantes.
+
+Não presuma que uma dependência é crítica apenas porque está declarada no projeto.
+
+Explique a relação observada entre a dependência e o fluxo de execução.
+
+### 3.2. Timeouts e limites de espera
+
+Investigue as configurações e implementações de timeouts relevantes para as operações analisadas.
+
+Considere, quando aplicável:
+
+- Conexão.
+- Leitura e resposta.
+- Escrita.
+- Aquisição de conexões.
+- Consultas e transações.
+- Chamadas HTTP.
+- Processamento de mensagens.
+
+Para cada configuração identificada, registre seu valor, unidade, origem e escopo, quando verificáveis.
+
+Diferencie valores declarados de comportamentos comprovados em execução.
+
+Não presuma que uma configuração se aplica a todos os clientes, dependências ou fluxos.
+
+### 3.3. Retries e repetição de operações
+
+Investigue mecanismos de repetição encontrados no código, configurações ou infraestrutura.
+
+Identifique condições de acionamento, número de tentativas, intervalos, backoff, limites e comportamento após esgotar as tentativas, quando essas informações estiverem disponíveis.
+
+Avalie riscos relacionados a:
+
+- Repetição de operações com efeitos colaterais.
+- Chamadas repetidas em diferentes camadas.
+- Possível amplificação de requisições.
+- Interação entre retries e timeouts.
+- Operações cujo resultado anterior é desconhecido.
+
+Não conclua que uma operação é segura para repetição sem evidências sobre seus efeitos e mecanismos de proteção.
+
+### 3.4. Circuit breakers e isolamento de falhas
+
+Verifique se existem mecanismos de circuit breaker, bulkhead, limitação de concorrência ou isolamento de recursos.
+
+Quando encontrados, identifique:
+
+- Dependências protegidas.
+- Configurações relevantes.
+- Condições de abertura e recuperação.
+- Limites de concorrência.
+- Comportamento em caso de bloqueio ou rejeição.
+- Fallbacks efetivamente implementados.
+
+Não considere a simples presença de uma biblioteca como evidência de um mecanismo ativo.
+
+Se o mecanismo não for identificado no escopo analisado, registre a limitação sem afirmar que ele inexiste em toda a infraestrutura.
+
+### 3.5. Tratamento e propagação de falhas
+
+Investigue o tratamento de exceções, respostas de erro e falhas de comunicação.
+
+Identifique como os erros são capturados, transformados, propagados ou tratados entre componentes.
+
+Analise o comportamento observado em falhas de dependências, persistência, comunicação e processamento.
+
+Diferencie falhas recuperáveis de não recuperáveis somente quando houver evidências suficientes.
+
+Não conclua que o tratamento é adequado apenas porque existe um handler ou bloco de captura de exceções.
+
+### 3.6. Falhas parciais e operações distribuídas
+
+Investigue fluxos que envolvam múltiplos componentes, serviços ou recursos.
+
+Quando evidenciado, avalie:
+
+- Transações locais e distribuídas.
+- Operações de persistência e publicação de eventos.
+- Mecanismos de rollback e compensação.
+- Sagas e processos de recuperação.
+- Reprocessamento e reconciliação.
+- Falhas entre etapas de um fluxo.
+
+Não presuma atomicidade entre sistemas independentes.
+
+Não presuma consistência eventual, compensação ou recuperação automática sem evidências.
+
+### 3.7. Idempotência e duplicidade
+
+Investigue mecanismos de proteção contra efeitos duplicados, considerando:
+
+- Chaves de idempotência.
+- Controle de duplicidade.
+- Identificadores de mensagens.
+- Restrições de unicidade.
+- Deduplicação.
+- Controle de estado e concorrência.
+
+Identifique o escopo de proteção efetivamente observado.
+
+Diferencie idempotência de uma operação, deduplicação de mensagens e prevenção de concorrência.
+
+Não considere a presença de um identificador ou chave como prova de idempotência completa.
+
+### 3.8. Mensageria e processamento assíncrono
+
+Quando houver mensageria, investigue:
+
+- Acknowledgments e confirmações.
+- Retry e redelivery.
+- Dead-letter queues ou mecanismos equivalentes.
+- Tratamento de mensagens inválidas.
+- Limites de processamento.
+- Deduplicação e reprocessamento.
+- Comportamento diante de falhas de consumidores e produtores.
+
+Diferencie mecanismos implementados na aplicação de mecanismos que dependem da plataforma ou infraestrutura.
+
+Não presuma garantias de entrega, ordenação, persistência ou processamento exatamente uma vez.
+
+### 3.9. Recursos e degradação
+
+Investigue mecanismos observáveis de gerenciamento e proteção de recursos.
+
+Considere pools de conexões, threads, limites de concorrência, filas internas, backpressure e outros controles identificados.
+
+Registre configurações, limites e comportamentos quando verificáveis.
+
+Não invente capacidade máxima, disponibilidade percentual, número de requisições suportadas ou limites de infraestrutura.
+
+Não conclua que existe degradação controlada sem identificar os mecanismos que a sustentam.
+
+## 4. Procedimento de execução
+
+### Etapa 1 — Identificar o escopo
+
+Determine qual API, serviço, módulo ou repositório será analisado.
+
+Utilize as informações fornecidas pelo usuário e os elementos disponíveis no contexto.
+
+Se o escopo não puder ser identificado, solicite esclarecimento antes de produzir conclusões específicas.
+
+Não solicite informações secundárias que não sejam necessárias para iniciar a avaliação.
+
+### Etapa 2 — Localizar as evidências
+
+Inspecione a estrutura do projeto e os arquivos relevantes.
+
+Utilize os recursos disponíveis no Continue para localizar implementações, configurações, dependências e fluxos relacionados à resiliência.
+
+Se houver um relatório de descoberta ou arquitetura, utilize-o para orientar a investigação.
+
+Esses relatórios são opcionais e não substituem a inspeção das fontes originais quando necessária.
+
+Não assuma que os relatórios anteriores estão completos ou atualizados.
+
+### Etapa 3 — Mapear os fluxos relevantes
+
+Identifique os pontos de entrada, componentes envolvidos e dependências dos fluxos examinados.
+
+Relacione cada mecanismo de resiliência à operação ou dependência que ele efetivamente protege.
+
+Não invente sequências de execução com base apenas nos nomes de classes, métodos ou componentes.
+
+Se um fluxo não puder ser reconstruído integralmente, registre a limitação.
+
+### Etapa 4 — Avaliar os mecanismos
+
+Examine os aspectos definidos na seção 3 e nas instruções do `reliability-engineer.md`.
+
+Para cada achado relevante:
+
+1. Identifique o componente, operação ou fluxo.
+2. Registre as evidências verificáveis.
+3. Classifique a conclusão.
+4. Explique a implicação para a resiliência.
+5. Diferencie o que foi observado do que precisa ser validado.
+6. Registre as limitações e informações faltantes.
+
+Não force a identificação de problemas em todos os aspectos.
+
+Quando não houver evidências suficientes, registre a lacuna em vez de produzir uma conclusão artificial.
+
+### Etapa 5 — Avaliar os riscos
+
+Identifique riscos técnicos sustentados pelas evidências.
+
+Diferencie:
+
+- Problemas diretamente observados.
+- Riscos potenciais fundamentados.
+- Hipóteses que exigem validação.
+- Lacunas de informação.
+
+Não invente probabilidade de ocorrência, impacto financeiro, impacto para clientes ou disponibilidade percentual.
+
+Não atribua uma classificação global de resiliência sem critérios explícitos e evidências adequadas.
+
+### Etapa 6 — Produzir o relatório
+
+Produza o relatório conforme a estrutura definida na seção 5.
+
+Se o ambiente permitir a criação de arquivos, grave o resultado em:
+
+`docs/assessment/04-resilience.md`
+
+Se não for possível criar ou editar arquivos, apresente o conteúdo completo em Markdown para que o usuário possa salvá-lo manualmente.
+
+Não afirme que um arquivo foi criado ou atualizado sem confirmação de que a operação ocorreu.
+
+## 5. Estrutura obrigatória do relatório
+
+Utilize a seguinte estrutura:
+
+# Avaliação de Resiliência da API
+
+## 1. Identificação e escopo
+
+- API, serviço ou módulo analisado.
+- Escopo efetivamente examinado.
+- Fontes consultadas.
+- Limitações da inspeção.
+
+## 2. Resumo executivo
+
+- Principais mecanismos de resiliência identificados.
+- Principais riscos sustentados por evidências.
+- Limitações relevantes.
+- Aspectos que não puderam ser confirmados.
+
+Não atribua nota ou classificação global de resiliência.
+
+## 3. Dependências e fluxos críticos
+
+- Dependências identificadas.
+- Fluxos que utilizam essas dependências.
+- Mecanismos de proteção observados.
+- Pontos de atenção e limitações.
+
+## 4. Mecanismos de resiliência identificados
+
+Organize os mecanismos encontrados por categoria:
+
+- Timeouts.
+- Retries.
+- Circuit breakers e isolamento.
+- Tratamento de falhas.
+- Idempotência.
+- Mensageria e processamento assíncrono.
+- Recuperação e compensação.
+- Gerenciamento de recursos.
+
+Inclua apenas mecanismos sustentados por evidências.
+
+Quando uma categoria não puder ser avaliada, registre a lacuna.
+
+## 5. Achados de resiliência
+
+Para cada achado, utilize:
+
+### [ID] Título do achado
+
+- **Classificação:** CONFIRMADO, INFERIDO, HIPÓTESE ou SEM EVIDÊNCIA SUFICIENTE.
+- **Categoria:** aspecto de resiliência relacionado.
+- **Componente ou fluxo:** elemento afetado.
+- **Descrição:** o que foi observado.
+- **Condição de falha:** cenário relacionado, quando sustentado.
+- **Evidências:** arquivos, classes, métodos, configurações, testes ou outras fontes verificáveis.
+- **Implicação técnica:** consequência observada ou risco potencial.
+- **Mecanismos de proteção:** mecanismos identificados, quando existentes.
+- **Limitações:** informações que faltam para confirmar o alcance do achado.
+- **Possível ação:** investigação ou melhoria relacionada, quando aplicável.
+
+Utilize identificadores estáveis, como RES-001, RES-002 e assim por diante.
+
+Não invente cenários de falha como se tivessem sido observados em testes.
+
+## 6. Evidências de testes e operação
+
+Quando existirem, registre separadamente:
+
+### Testes
+
+- Cenário testado.
+- Fonte do teste.
+- Resultado observado.
+- Limitações e cenários não cobertos.
+
+### Evidências operacionais
+
+- Ambiente e período, quando conhecidos.
+- Logs, métricas, traces, incidentes ou relatórios utilizados.
+- Comportamento efetivamente observado.
+- Limitações da evidência.
+
+Se não houver evidências de testes ou operação, declare que esses aspectos não puderam ser avaliados com as fontes disponíveis.
+
+Não invente resultados de execução.
+
+## 7. Oportunidades de melhoria
+
+Para cada oportunidade:
+
+- Identifique o achado relacionado.
+- Explique a motivação técnica.
+- Descreva a melhoria ou investigação sugerida.
+- Informe as premissas e dependências que precisam ser validadas.
+- Diferencie correção de problema confirmado de melhoria preventiva.
+
+Não transforme sugestões técnicas em requisitos de negócio.
+
+Não prescreva tecnologias sem justificar sua adequação às evidências e ao contexto disponível.
+
+## 8. Pontos que exigem investigação complementar
+
+Registre:
+
+- Questões sem evidência suficiente.
+- Configurações ou artefatos necessários para esclarecer as dúvidas.
+- Testes que poderiam validar hipóteses.
+- Aspectos dependentes de infraestrutura ou operação.
+- Encaminhamentos para outras especialidades, quando pertinentes.
+
+Não execute automaticamente outras avaliações.
+
+## 9. Conclusão
+
+Resuma:
+
+- O que foi possível confirmar sobre os mecanismos de resiliência.
+- Quais riscos foram efetivamente identificados.
+- Quais aspectos permanecem inconclusivos.
+- Quais limitações afetam a interpretação do resultado.
+
+A conclusão deve refletir exclusivamente o escopo e as evidências examinadas.
+
+## 10. Índice de evidências
+
+Organize as referências utilizadas e relacione-as aos achados correspondentes.
+
+Inclua caminhos de arquivos e referências verificáveis.
+
+Não invente linhas de código, referências ou fontes.
+
+## 6. Política de evidências
+
+Utilize as seguintes classificações em todas as conclusões relevantes:
+
+### CONFIRMADO
+
+A conclusão é diretamente sustentada por uma fonte verificável.
+
+Informe a fonte e o elemento específico que sustenta a afirmação.
+
+### INFERIDO
+
+A conclusão decorre de interpretação técnica fundamentada em evidências.
+
+Explique o raciocínio e diferencie a interpretação do fato observado.
+
+### HIPÓTESE
+
+A conclusão representa uma possibilidade que precisa ser validada.
+
+Informe as evidências que motivaram a hipótese e o que falta verificar.
+
+### SEM EVIDÊNCIA SUFICIENTE
+
+Não existem informações suficientes para confirmar ou descartar uma conclusão relevante.
+
+Informe quais arquivos, configurações, testes ou evidências operacionais seriam necessários.
+
+Não apresente inferências ou hipóteses como fatos confirmados.
+
+Não transforme ausência de documentação em prova de ausência de comportamento.
+
+Não invente caminhos de arquivos, classes, métodos, linhas de código, métricas ou resultados.
+
+## 7. Limites e independência
+
+Esta avaliação é exclusivamente de resiliência.
+
+Não execute avaliações aprofundadas de arquitetura geral, escalabilidade, performance, segurança, observabilidade ou Product Readiness.
+
+Se identificar uma questão pertencente a outra especialidade, registre o encaminhamento e sua justificativa.
+
+Não execute automaticamente outros prompts ou agentes.
+
+A existência de relatórios anteriores é opcional. A ausência de uma avaliação arquitetural ou de escalabilidade não deve impedir a análise de resiliência.
+
+Não altere ou refatore o código.
+
+Não implemente mecanismos de proteção.
+
+Não execute testes de carga, testes de falha ou chamadas a ambientes externos sem autorização explícita e recursos apropriados.
+
+## 8. Critérios de qualidade
+
+Antes de finalizar o relatório, verifique:
+
+- O escopo efetivamente analisado está explícito.
+- As conclusões relevantes possuem evidências ou classificação de incerteza.
+- Mecanismos identificados estão relacionados às operações que efetivamente utilizam esses mecanismos.
+- Implementação, configuração, testes e comportamento operacional estão diferenciados.
+- Nenhum componente, mecanismo, comportamento, métrica ou resultado foi inventado.
+- Ausência de evidência não foi tratada como prova de ausência.
+- Riscos e recomendações estão relacionados a achados específicos.
+- Limitações e informações faltantes estão documentadas.
+- Nenhuma análise especializada fora do escopo foi executada.
+- O relatório pode ser compreendido sem depender do histórico da conversa.
+- As referências permitem que outro analista localize e valide as evidências.
+
+Se algum critério não puder ser atendido, registre a limitação no relatório.
+
+Priorize confiabilidade, precisão e rastreabilidade sobre a quantidade de achados.
+
+## 9. Comportamento durante a execução
+
+Solicite esclarecimentos ao usuário somente quando a ausência de informação impedir a identificação do escopo, alterar materialmente a interpretação de um achado ou inviabilizar uma conclusão necessária.
+
+Não interrompa a análise por informações secundárias que possam ser registradas como lacunas.
+
+Não afirme que inspecionou arquivos, executou testes ou verificou ambientes de produção sem que essas ações tenham efetivamente ocorrido.
+
+Ao finalizar:
+
+1. Apresente um resumo dos resultados.
+2. Informe as principais limitações.
+3. Indique o local do relatório somente se ele tiver sido efetivamente criado.
+4. Destaque os pontos que exigem investigação complementar.
+
+Não declare que a API é resiliente ou não resiliente de forma global sem evidências e critérios suficientes.

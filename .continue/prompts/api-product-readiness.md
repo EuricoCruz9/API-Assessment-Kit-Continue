@@ -1,3 +1,9 @@
+---
+name: API Product Readiness
+invokable: true
+description: Avalia a capacidade de uma API ser reutilizada por novos clientes.
+---
+
 # PROMPT — API Product Readiness
 
 ## Objetivo

@@ -1,3 +1,9 @@
+---
+name: Analyze API Scalability
+invokable: true
+description: Analisa aspectos de escalabilidade, gargalos potenciais e limitações de uma API com base em evidências.
+---
+
 # PROMPT — Analyze Scalability
 
 ## Objetivo

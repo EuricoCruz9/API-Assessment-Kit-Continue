@@ -1,3 +1,9 @@
+---
+name: Discover API
+invokable: true
+description: Descobre e documenta a estrutura, os contratos e as dependências observáveis de uma API com base em evidências.
+---
+
 # PROMPT — Discover API
 
 ## Objetivo

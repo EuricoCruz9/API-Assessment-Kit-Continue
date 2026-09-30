@@ -1,6 +1,3 @@
-
-E então o **prompt** fica responsável por transformar esse papel em uma execução concreta.
-
 ---
 
 # `.continue/prompts/analyze-business.md`
